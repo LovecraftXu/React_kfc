@@ -1,33 +1,75 @@
 .App {
-  text-align: center;
+    text-align: left;
 }
 
-.App-logo {
-  animation: App-logo-spin infinite 20s linear;
-  height: 40vmin;
-  pointer-events: none;
+html,body,#root,.App {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+.App > .header {
+    text-align: center;
+    height: 80px;
+    line-height: 80px;
+    background-color: black;
+	font-size: 18px;
+	font-weight: bold;
+    padding: 0 2em;
+    border-radius: 10px;
 }
 
-.App-link {
-  color: #61dafb;
+.header h1 {
+    color: white;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+
+.App >  .content {
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+}
+
+.App > .content .nav {
+    width: 200px;
+    border-right: 1px solid #cccccc;
+    background-color: gold;
+    border-radius: 10px;
+}
+
+.nav .btn {
+    height: 3em;
+    line-height: 3em;
+    width: 100%;
+    cursor: pointer;
+    text-align: center;
+    color: #666;
+    font: "宋体";
+    font-weight: bold;
+    border:1px solid white ;
+    border-radius: 10px;
+    background-color: blue;
+}
+
+.nav .link {
+    text-decoration: none;
+    
+}
+.nav .link:visited{
+    color: cyan;
+    text-decoration: none;
+}
+.nav .link:link{
+    color: cyan;
+    text-decoration: none;
+}
+.nav .link:hover{
+    color: purple;
+    text-decoration: none;
+}
+
+.App > .content .content-right {
+    flex: 1;
+    padding: 1em;
+    overflow-y: hidden;
 }

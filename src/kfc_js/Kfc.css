@@ -1,0 +1,25 @@
+.btns {
+    margin: .5em 0;
+}
+.btn {
+	margin-right: 20px;
+}
+.primary {
+    height: 3em;
+    width: 5em;
+    background-color: blue;
+    color: white;
+    border-radius: 7px;
+}
+
+.hidden {
+    display: none;
+}
+
+.hidden input {
+    margin-right: 1em;
+    border: 1px solid #DBDBDB;
+    /* border: 1px solid black; */
+    outline: none;
+    
+}
