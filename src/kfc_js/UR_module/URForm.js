@@ -1,4 +1,4 @@
-import { Form, Input, Upload, message, Button, Icon, Select, } from 'antd';
+import { Form, Select } from 'antd';
 import React from 'react';
 import $ from 'jquery';
 

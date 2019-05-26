@@ -1,7 +1,7 @@
 import React from 'react';
 import $ from 'jquery';
 import { Button, Table, Divider, Icon, Modal, message} from 'antd';
-import './Kfc.css';
+import '../Kfc.css';
 import URForm from './URForm';
 
 $.ajaxSetup({
@@ -34,73 +34,18 @@ class UR extends React.Component {
     loadUR(){
         this.setState({loading:true});
         let url = "http://wangdoudou.cn:9999/UR/findAllWithUserRole";
-        $.get(url,({status,data,message})=>{
+        $.get(url,({status,data,message:msg})=>{
             if(status === 200){
                 this.setState({
                     urs:data,
                     loading:false
                 })
             } else {
-                alert(message);
-            }
-        });
-    }
-
-    //批量删除
-    batchDeleteByIds(){
-        let url = "http://wangdoudou.cn:9999/UR/deleteBatchByIds";
-        $.ajax({
-            url:url,
-            method:'POST',
-            processData:false,
-            contentType:'application/json',
-            data:JSON.stringify(this.state.ids),
-            success:({status,message}) =>{
-                if(status === 200){
-                    message.success(message);
-                    this.loadUR();
-                } else {
-                    message.error(message);
-                }
-            } 
-        });
-    }
-
-    //删除
-    toDelete = (id) => {
-        let vm = this;
-        Modal.confirm({
-          title: '是否确定删除本行?',
-          content: 'Some descriptions',
-          okText: '是',
-          okType: 'danger',
-          cancelText: '否',
-          onOk() {
-            let url ="http://wangdoudou.cn:9999/UR/deleteById?id="+id;
-            $.get(url,({status,message:msg}) =>{
-            if(status === 200){
                 message.success(msg);
-                vm.loadUR();
-            } else {
-                message.error(msg);
             }
-        })
-            
-          },
-          onCancel() {
-            
-          },
         });
     }
 
-    //查看详细信息
-    toDetails(record){
-        this.props.history.push({
-            pathname:'/urDetails',
-            data:record
-        });
-    }
-    
     //点击添加执行函数
     toAdd = () => {
         this.setState({
@@ -109,14 +54,7 @@ class UR extends React.Component {
         });
     }
 
-    //点击修改执行函数
-    toEdit = (record) =>{
-        this.setState({
-            visible: true,
-            ur:record,
-        });
-    }
-    //点击确认
+    //提交
     handleOk = e => {
         e.preventDefault();
         this.form.validateFields((err, values) => {
@@ -134,7 +72,81 @@ class UR extends React.Component {
             
           } 
         });    
-    };
+    }
+
+    //查看详细信息
+    toDetails(record){
+        this.props.history.push({
+            pathname:'/urDetails',
+            data:record
+        });
+    }
+    
+    //点击修改执行函数
+    toEdit = (record) =>{
+        this.setState({
+            visible: true,
+            ur:record,
+        });
+    }
+
+    //点击删除按钮后执行
+    toDelete = (id) => {
+        Modal.confirm({
+          title: '是否确定删除本行?',
+          content: 'Some descriptions',
+          okText: '是',
+          okType: 'danger',
+          cancelText: '否',
+          onOk:() => {
+            let url ="http://wangdoudou.cn:9999/UR/deleteById?id="+id;
+            $.get(url,({status,message:msg}) =>{
+            if(status === 200){
+                message.success(msg);
+                this.loadUR();
+            } else {
+                message.error(msg);
+            }
+             })    
+        },
+          onCancel() {
+            
+          },
+        });
+    }
+
+    //点击批量删除按钮后执行
+    batchDeleteByIds(){
+        Modal.confirm({
+            title: '是否确定批量删除数据?',
+            content: 'Some descriptions',
+            okText: '是',
+            okType: 'danger',
+            cancelText: '否',
+            onOk:() => {
+              let url = "http://wangdoudou.cn:9999/UR/deleteBatchByIds";
+          $.ajax({
+              url:url,
+              method:'POST',
+              processData:false,
+              contentType:'application/json',
+              data:JSON.stringify(this.state.ids),
+              success:({status,message:msg}) =>{
+                  if(status === 200){
+                      message.success(msg);
+                      this.loadUR();
+                  } else {
+                      message.error(msg);
+                  }
+              } 
+          });
+          },
+            onCancel() {
+              
+            },
+          });
+    }
+    
     //点击取消
     handleCancel = e => {
         console.log(e);
@@ -146,7 +158,7 @@ class UR extends React.Component {
         this.setState({visible: false, });
     }
     //ref函数
-    URFormRefs = (form) =>{
+    FormRefs = (form) =>{
         this.form = form;
     }
 
@@ -166,9 +178,7 @@ class UR extends React.Component {
 
         let pagination = {
             position:'bottom',
-            pageSize:2,
-
-
+            pageSize:5,
         }
         return (
             <div className="ur">
@@ -176,7 +186,7 @@ class UR extends React.Component {
                 <div class="btns">
                     <Button type="primary" className="btn" onClick={this.toAdd.bind(this)}>添加</Button>
                     <Button type="danger" className="btn" onClick = {this.batchDeleteByIds.bind(this)}>批量下架</Button>
-                    <Button className="btn" >导出</Button>
+                    {/* <Button className="btn" >导出</Button> */}
                 </div>
                 
                 {/* 模态框 */}
@@ -186,7 +196,7 @@ class UR extends React.Component {
                     onOk={this.handleOk}
                     onCancel={this.handleCancel}
                     >
-                    <URForm initData={this.state.ur} ref={this.URFormRefs} />
+                    <URForm initData={this.state.ur} ref={this.FormRefs} />
                 </Modal>
 
                 <Table rowKey="id" dataSource={urs} bordered={true} rowSelection={rowSelection} size="small" pagination={pagination} loading={this.state.loading}>
