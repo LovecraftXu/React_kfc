@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button } from 'antd';
 
-class RoleDetails extends React.Component {
+class ProductDetails extends React.Component {
    
     goBack(){
         this.props.history.goBack();
@@ -10,11 +10,11 @@ class RoleDetails extends React.Component {
     render(){
         let data = this.props.location.state;
         return (
-            <div className="role_details">
-                <h2>{data.name}的详细信息</h2>
+            <div className="product_details">
+                 <h2>{data.name}的订单信息</h2>
                 <Button onClick={this.goBack.bind(this)}>返回</Button>
                 <p>{JSON.stringify(data)}</p>
-
+                <img alt="图片迷路了" src={data.category.icon} style={{width:"10%",border:"1px solid red",padding:"1em",borderRadius:"5px"}}/>
             </div>
         )
     }
@@ -22,4 +22,4 @@ class RoleDetails extends React.Component {
 
 }
 
-export default RoleDetails;
+export default ProductDetails;

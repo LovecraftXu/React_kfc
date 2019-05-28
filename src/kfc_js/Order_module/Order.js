@@ -1,35 +1,34 @@
 import React from 'react';
 import $ from 'jquery';
-import { Button, Table, Divider, Icon, Modal, message} from 'antd';
+import { Button, Table, Divider, Icon, Modal, message } from 'antd';
 import '../Kfc.css';
-import UserForm from './UserForm';
+import OrderForm from './OrderForm';
 
-
-class User extends React.Component {
+class Order extends React.Component {
 
     constructor(props){
         super(props);
-        this.state = {
+        this.state = {   
             visible:false,
             ids:[],
-            users:[],
+            orders:[], 
             obj:{},
             loading:true
         }
     }
 
     componentWillMount(){
-        this.loadUser();
+        this.loadOrder();
     }
 
     //加载
-    loadUser(){
-        let url = "http://wangdoudou.cn:9999/user/findAll";
+    loadOrder(){
+        let url = "http://wangdoudou.cn:9999/order/findAllWithUser";
         $.get(url,({status,data,message:msg})=>{
             if(status === 200){
                 this.setState({
-                    users:data,
-                    loading:false
+                    orders:data,
+                    loading:false  
                 })
             } else {
                 message.success(msg);
@@ -45,17 +44,20 @@ class User extends React.Component {
         });
     }
 
-     //提交
-     handleOk = e => {
+    //提交
+    handleOk = e => {
         e.preventDefault();
         this.form.validateFields((err, values) => {
           if (!err) {
-            let url = "http://wangdoudou.cn:9999/user/saveOrUpdate";
-            $.post(url,values,({status,message:msg})=>{
+              console.log(values);
+            let time=values.orderTime._d.getTime();
+            console.log(time);
+            let url = "http://wangdoudou.cn:9999/order/saveOrUpdate";
+            $.post(url,{orderTime:time,userId:values.userId},({status,message:msg})=>{
                 if(status === 200){
                     message.success(msg);
                     this.closeModal();
-                    this.loadUser();
+                    this.loadOrder();
                 } else {
                     message.error(msg);
                 }
@@ -68,7 +70,7 @@ class User extends React.Component {
     //查看详细信息
     toDetails(record){
         this.props.history.push({
-            pathname:'/userDetails',
+            pathname:'/orderDetails',
             state:record
         });
     }
@@ -90,11 +92,11 @@ class User extends React.Component {
           okType: 'danger',
           cancelText: '否',
           onOk:() => {
-            let url ="http://wangdoudou.cn:9999/user/deleteById?id="+id;
+            let url ="http://wangdoudou.cn:9999/order/deleteById?id="+id;
             $.get(url,({status,message:msg}) =>{
             if(status === 200){
                 message.success(msg);
-                this.loadUser();
+                this.loadOrder();
             } else {
                 message.error(msg);
             }
@@ -115,7 +117,7 @@ class User extends React.Component {
             okType: 'danger',
             cancelText: '否',
             onOk:() => {
-              let url = "http://wangdoudou.cn:9999/user/deleteBatchByIds";
+              let url = "http://wangdoudou.cn:9999/order/deleteBatchByIds";
           $.ajax({
               url:url,
               method:'POST',
@@ -125,7 +127,7 @@ class User extends React.Component {
               success:({status,message:msg}) =>{
                   if(status === 200){
                       message.success(msg);
-                      this.loadUser();
+                      this.loadOrder();
                   } else {
                       message.error(msg);
                   }
@@ -137,13 +139,13 @@ class User extends React.Component {
             },
           });
     }
-
-   //点击取消
-   handleCancel = e => {
-    this.closeModal();
+    
+    //点击取消
+    handleCancel = e => {
+        this.closeModal();
     };
 
-    //关闭模态框
+      //关闭模态框
     closeModal(){
         this.setState({visible: false, });
     }
@@ -152,8 +154,20 @@ class User extends React.Component {
         this.form = form;
     }
 
+     //时间戳转日期  没有时间默认为1970-01-1 8:0:0
+     timestampToTime(timestamp) {
+        let date = new Date(timestamp);//时间戳为10位需*1000，时间戳为13位的话不需乘1000    
+        let Y = date.getFullYear() + '-';      
+        let M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1) : date.getMonth()+1) + '-';      
+        let D = date.getDate() + ' ';     
+        let h = date.getHours() + ':';
+        let m = date.getMinutes() + ':';
+        let s = date.getSeconds();
+         return Y+M+D+h+m+s;
+        }
+
     render(){
-        let { users } = this.state;
+        let { orders } = this.state;
         let { Column } = Table;
         var rowSelection = {
             onChange: (selectedRowKeys, selectedRows) => {
@@ -164,21 +178,19 @@ class User extends React.Component {
                 name: record.name,
               }),
           };
-        //分页配置
+
         let pagination = {
             position:'bottom',
             pageSize:5,
-            
         }
-
         return (
-            <div className="user">
-                <h2>用户管理</h2>
+            <div className="order">
+                <h2>订单管理</h2>
                 <div className="btns">
                     <Button type="primary" className="btn" onClick={this.toAdd.bind(this)}>添加</Button>
                     <Button type="danger" className="btn" onClick = {this.batchDeleteByIds.bind(this)}>批量下架</Button>
-                    {/* <Button className="btn" onClick={()=>{window.location.href=""}}  >导出</Button> 导出接口 */}
                 </div>
+                
                 {/* 模态框 */}
                 <Modal
                     title="添加"
@@ -186,24 +198,25 @@ class User extends React.Component {
                     onOk={this.handleOk}
                     onCancel={this.handleCancel}
                     >
-                    <UserForm initData={this.state.obj} ref={this.FormRefs} />
+                    <OrderForm initData={this.state.obj} ref={this.FormRefs} />
                 </Modal>
-                
 
-                <Table rowKey="id"  
-                dataSource={users} 
-                bordered={true} 
-                rowSelection={rowSelection} 
-                size="small" 
-                pagination={pagination} 
-                loading={this.state.loading}>
-                    <Column align="center" title="类型名称" dataIndex="name" key="name" />
-                    <Column align="center" title="手机号" dataIndex="telephone" key="telephone" />
-                    
+                <Table rowKey="id" dataSource={orders} bordered={true} rowSelection={rowSelection} size="small" pagination={pagination} loading={this.state.loading}>
+
+                    <Column align="center" title="订单时间" key="orderTime" render={(record) => (
+                        <span>
+                        {this.timestampToTime(record.orderTime)}
+                        </span>
+                    )} />
+                    <Column align="center" title="角色名" key="user" render={(record) => (
+                        <span>
+                        {record.user.name}
+                        </span>
+                    )} />
                     <Column align="center"
                     title="操作"
                     key="action"
-                    render={(text, record) => (
+                    render={(record) => (
                         <span>
                         <Icon type="delete" onClick={this.toDelete.bind(this,record.id)}></Icon>
                         <Divider type="vertical" />
@@ -222,4 +235,4 @@ class User extends React.Component {
 
 
 
-export default User;
+export default Order;

@@ -16,12 +16,7 @@ class UR extends React.Component {
             visible:false,
             ids:[],
             urs:[],
-            form:{
-                id:'',
-                userId:'',
-                roleId:''
-            },
-            ur:{},
+            obj:{},
             loading:true
         }
     }
@@ -50,7 +45,7 @@ class UR extends React.Component {
     toAdd = () => {
         this.setState({
             visible: true, 
-            ur:{}
+            obj:{}
         });
     }
 
@@ -78,7 +73,7 @@ class UR extends React.Component {
     toDetails(record){
         this.props.history.push({
             pathname:'/urDetails',
-            data:record
+            state:record
         });
     }
     
@@ -86,7 +81,7 @@ class UR extends React.Component {
     toEdit = (record) =>{
         this.setState({
             visible: true,
-            ur:record,
+            obj:record,
         });
     }
 
@@ -149,7 +144,6 @@ class UR extends React.Component {
     
     //点击取消
     handleCancel = e => {
-        console.log(e);
         this.closeModal();
     };
 
@@ -183,7 +177,7 @@ class UR extends React.Component {
         return (
             <div className="ur">
                 <h2>种类管理</h2>
-                <div class="btns">
+                <div className="btns">
                     <Button type="primary" className="btn" onClick={this.toAdd.bind(this)}>添加</Button>
                     <Button type="danger" className="btn" onClick = {this.batchDeleteByIds.bind(this)}>批量下架</Button>
                     {/* <Button className="btn" >导出</Button> */}
@@ -196,7 +190,7 @@ class UR extends React.Component {
                     onOk={this.handleOk}
                     onCancel={this.handleCancel}
                     >
-                    <URForm initData={this.state.ur} ref={this.FormRefs} />
+                    <URForm initData={this.state.obj} ref={this.FormRefs} />
                 </Modal>
 
                 <Table rowKey="id" dataSource={urs} bordered={true} rowSelection={rowSelection} size="small" pagination={pagination} loading={this.state.loading}>

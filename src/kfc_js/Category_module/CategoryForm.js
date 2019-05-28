@@ -36,9 +36,10 @@ class CategoryDetails extends React.Component {
         <div  className="ur_form">
         
         <Form className="form">
+          
         <Form.Item label="种类名称">
           {getFieldDecorator("name" , {
-            rules: [{ required: true, message: 'Please select name!' }],
+            rules: [{ required: true, message: 'Please input name!' }],
           })( <Input placeholder="Name" /> )}
         </Form.Item>
         <Form.Item label="图片">

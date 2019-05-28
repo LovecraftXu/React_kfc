@@ -1,41 +1,41 @@
 import React from 'react';
 import $ from 'jquery';
-import { Button, Table, Divider, Icon, Modal, message} from 'antd';
+import { Button, Table, Divider, Icon, Modal, message } from 'antd';
 import '../Kfc.css';
-import UserForm from './UserForm';
+import ProductForm from './ProductForm';
 
-
-class User extends React.Component {
+class Product extends React.Component {
 
     constructor(props){
         super(props);
         this.state = {
             visible:false,
             ids:[],
-            users:[],
+            products:[], 
             obj:{},
             loading:true
         }
     }
 
     componentWillMount(){
-        this.loadUser();
+        this.loadProduct();
     }
 
     //加载
-    loadUser(){
-        let url = "http://wangdoudou.cn:9999/user/findAll";
+    loadProduct(){
+        let url = "http://wangdoudou.cn:9999/product/findAllWithCategory";
         $.get(url,({status,data,message:msg})=>{
             if(status === 200){
                 this.setState({
-                    users:data,
-                    loading:false
+                    products:data,
+                    loading:false    
                 })
             } else {
                 message.success(msg);
             }
         });
     }
+    
 
     //点击添加执行函数
     toAdd = () => {
@@ -45,17 +45,17 @@ class User extends React.Component {
         });
     }
 
-     //提交
-     handleOk = e => {
+    //提交
+    handleOk = e => {
         e.preventDefault();
         this.form.validateFields((err, values) => {
           if (!err) {
-            let url = "http://wangdoudou.cn:9999/user/saveOrUpdate";
+            let url = "http://wangdoudou.cn:9999/product/saveOrUpdate";
             $.post(url,values,({status,message:msg})=>{
                 if(status === 200){
                     message.success(msg);
                     this.closeModal();
-                    this.loadUser();
+                    this.loadProduct();
                 } else {
                     message.error(msg);
                 }
@@ -68,7 +68,7 @@ class User extends React.Component {
     //查看详细信息
     toDetails(record){
         this.props.history.push({
-            pathname:'/userDetails',
+            pathname:'/productDetails',
             state:record
         });
     }
@@ -90,11 +90,11 @@ class User extends React.Component {
           okType: 'danger',
           cancelText: '否',
           onOk:() => {
-            let url ="http://wangdoudou.cn:9999/user/deleteById?id="+id;
+            let url ="http://wangdoudou.cn:9999/product/deleteById?id="+id;
             $.get(url,({status,message:msg}) =>{
             if(status === 200){
                 message.success(msg);
-                this.loadUser();
+                this.loadProduct();
             } else {
                 message.error(msg);
             }
@@ -115,7 +115,7 @@ class User extends React.Component {
             okType: 'danger',
             cancelText: '否',
             onOk:() => {
-              let url = "http://wangdoudou.cn:9999/user/deleteBatchByIds";
+              let url = "http://wangdoudou.cn:9999/product/deleteBatchByIds";
           $.ajax({
               url:url,
               method:'POST',
@@ -125,7 +125,7 @@ class User extends React.Component {
               success:({status,message:msg}) =>{
                   if(status === 200){
                       message.success(msg);
-                      this.loadUser();
+                      this.loadProduct();
                   } else {
                       message.error(msg);
                   }
@@ -137,13 +137,13 @@ class User extends React.Component {
             },
           });
     }
-
-   //点击取消
-   handleCancel = e => {
-    this.closeModal();
+    
+    //点击取消
+    handleCancel = e => {
+        this.closeModal();
     };
 
-    //关闭模态框
+      //关闭模态框
     closeModal(){
         this.setState({visible: false, });
     }
@@ -153,9 +153,10 @@ class User extends React.Component {
     }
 
     render(){
-        let { users } = this.state;
+        let {products} = this.state;
         let { Column } = Table;
-        var rowSelection = {
+
+       var rowSelection = {
             onChange: (selectedRowKeys, selectedRows) => {
               this.setState({ids:selectedRowKeys});
             },
@@ -164,46 +165,44 @@ class User extends React.Component {
                 name: record.name,
               }),
           };
-        //分页配置
+
         let pagination = {
             position:'bottom',
             pageSize:5,
-            
         }
-
         return (
-            <div className="user">
-                <h2>用户管理</h2>
+            <div className="product">
+                <h2>产品管理</h2>
                 <div className="btns">
                     <Button type="primary" className="btn" onClick={this.toAdd.bind(this)}>添加</Button>
                     <Button type="danger" className="btn" onClick = {this.batchDeleteByIds.bind(this)}>批量下架</Button>
-                    {/* <Button className="btn" onClick={()=>{window.location.href=""}}  >导出</Button> 导出接口 */}
                 </div>
-                {/* 模态框 */}
-                <Modal
+                
+               {/* 模态框 */}
+               <Modal
                     title="添加"
                     visible={this.state.visible}
                     onOk={this.handleOk}
                     onCancel={this.handleCancel}
                     >
-                    <UserForm initData={this.state.obj} ref={this.FormRefs} />
+                    <ProductForm initData={this.state.obj} ref={this.FormRefs} />
                 </Modal>
-                
 
-                <Table rowKey="id"  
-                dataSource={users} 
-                bordered={true} 
-                rowSelection={rowSelection} 
-                size="small" 
-                pagination={pagination} 
-                loading={this.state.loading}>
-                    <Column align="center" title="类型名称" dataIndex="name" key="name" />
-                    <Column align="center" title="手机号" dataIndex="telephone" key="telephone" />
-                    
+                <Table rowKey="id" dataSource={products} bordered={true} rowSelection={rowSelection} size="small" pagination={pagination} loading={this.state.loading}>
+                   
+                    <Column align="center" title="产品名称" dataIndex="name" key="name" />
+                    <Column align="center" title="描述" dataIndex="description" key="description" />
+                    <Column align="center" title="价格" dataIndex="price" key="price" />
+                    <Column align="center" title="销量" dataIndex="xiaoliang" key="xiaoliang" />                    
+                    <Column align="center" title="种类名" key="category" render={(record) => (
+                        <span>
+                        {record.category.name}
+                        </span>
+                    )} />
                     <Column align="center"
                     title="操作"
                     key="action"
-                    render={(text, record) => (
+                    render={(record) => (
                         <span>
                         <Icon type="delete" onClick={this.toDelete.bind(this,record.id)}></Icon>
                         <Divider type="vertical" />
@@ -222,4 +221,4 @@ class User extends React.Component {
 
 
 
-export default User;
+export default Product;

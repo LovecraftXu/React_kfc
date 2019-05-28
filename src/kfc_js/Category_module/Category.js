@@ -173,7 +173,7 @@ class Category extends React.Component {
         return (
             <div className="category">
                 <h2>种类管理</h2>
-                <div class="btns">
+                <div className="btns">
                     <Button type="primary" className="btn" onClick={this.toAdd.bind(this)}>添加</Button>
                     <Button type="danger" className="btn" onClick = {this.batchDeleteByIds.bind(this)}>批量下架</Button>
                 </div>

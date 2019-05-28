@@ -11,10 +11,13 @@ import UserDetails from './kfc_js/User_module/UserDetils';
 import Role from './kfc_js/Role_module/Role';
 import RoleDetails from './kfc_js/Role_module/RoleDetils';
 import UR from './kfc_js/UR_module/UR';
-import URDetails from './kfc_js/UR_module/URDetils';
-import Order from './kfc_js/Order';
-import Product from './kfc_js/Product';
-import OrderLine from './kfc_js/OrderLine';
+import URDetails from './kfc_js/UR_module/URDetails';
+import Order from './kfc_js/Order_module/Order';
+import OrderDetails from './kfc_js/Order_module/OrderDetails';
+import Product from './kfc_js/Product_module/Product';
+import ProductDetails from './kfc_js/Product_module/ProductDetails'
+import OrderLine from './kfc_js/OrderLine_module/OrderLine';
+import OrderLineDetails from './kfc_js/OrderLine_module/OrderLineDetails';
 
 
 function App() {
@@ -66,8 +69,11 @@ function App() {
           <Route path='/ur' component={UR} />
           <Route path='/urDetails' component={URDetails} />
           <Route path='/order' component={Order} />
+          <Route path='/orderDetails' component={OrderDetails} />
           <Route path='/product' component={Product} />
+          <Route path='/productDetails' component={ProductDetails} />
           <Route path='/orderLine' component={OrderLine} />
+          <Route path='/orderLineDetails' component={OrderLineDetails} />
         </Switch>
       </div>
       </BrowserRouter>
